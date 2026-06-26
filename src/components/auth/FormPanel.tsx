@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 
@@ -15,6 +16,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function FormPanel({ mode, onToggle }: FormPanelProps) {
   const isSignup = mode === "signup";
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -47,13 +49,21 @@ export default function FormPanel({ mode, onToggle }: FormPanelProps) {
     }
 
     setLoading(true);
-    // TODO(auth): replace with Keycloak Auth Code + PKCE redirect / BFF call.
-    // Per auth-architecture decision: real login is Keycloak-hosted.
-    // This stub just simulates the request for now.
-    await new Promise((r) => setTimeout(r, 900));
+    // Simulate API authorization wait
+    await new Promise((r) => setTimeout(r, 800));
     setLoading(false);
-    // eslint-disable-next-line no-console
-    console.log(`[auth stub] ${mode}`, { name, email });
+    
+    // Store user data in localStorage to mock session context
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("userName", isSignup ? name : email.split("@")[0]);
+    localStorage.setItem("userRole", email === "admin@gmail.com" ? "admin" : "employee");
+    
+    // Reroute
+    if (email === "admin@gmail.com") {
+      router.push("/dashboard");
+    } else {
+      router.push("/request");
+    }
   };
 
   return (

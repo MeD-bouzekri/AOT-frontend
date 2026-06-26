@@ -1,0 +1,472 @@
+{
+  "settings": {
+    "auto_approve_spend_limit": 1000,
+    "manager_spend_limit": 5000,
+    "director_spend_limit": 10000,
+    "hard_spend_ceiling": 20000,
+    "max_risk_score": 75,
+    "mode": "DEMO",
+    "default_llm": "claude",
+    "active_departments": [
+      "HR",
+      "IT",
+      "Finance",
+      "Procurement"
+    ],
+    "active_workers": [
+      "hr_worker",
+      "it_worker",
+      "finance_worker",
+      "procurement_worker"
+    ],
+    "rules": [
+      {
+        "id": "SEC-04",
+        "name": "Multi-department validation for remote work onboarding",
+        "enabled": true,
+        "authority": "director"
+      },
+      {
+        "id": "PROC-07",
+        "name": "High-value spend request double verification",
+        "enabled": true,
+        "authority": "manager"
+      },
+      {
+        "id": "FIN-02",
+        "name": "Tax clearance validation on spend > $5,000",
+        "enabled": true,
+        "authority": "director"
+      }
+    ],
+    "policy_history": [
+      {
+        "version": 2,
+        "ts": "2026-06-25T15:30:00Z",
+        "changed_by": "admin@gmail.com",
+        "change_summary": "Lowered auto-approve spend limit to $1000 and enabled SEC-04 rule"
+      },
+      {
+        "version": 1,
+        "ts": "2026-06-20T09:00:00Z",
+        "changed_by": "admin@gmail.com",
+        "change_summary": "Initial baseline governance thresholds set"
+      }
+    ]
+  },
+  "agents": {
+    "planner": {
+      "provider": "claude",
+      "model": "claude-3-5-sonnet",
+      "base_url": "",
+      "api_key_ref": "CLAUDE_API_KEY",
+      "temperature": 0.1,
+      "max_tokens": 2048
+    },
+    "hr_manager": {
+      "provider": "gemini",
+      "model": "gemini-2.0-flash-exp",
+      "base_url": "",
+      "api_key_ref": "GEMINI_API_KEY",
+      "temperature": 0.2,
+      "max_tokens": 1024
+    },
+    "hr_worker": {
+      "provider": "gemini",
+      "model": "gemini-2.0-flash-exp",
+      "base_url": "",
+      "api_key_ref": "GEMINI_API_KEY",
+      "temperature": 0.3,
+      "max_tokens": 1024
+    },
+    "it_manager": {
+      "provider": "claude",
+      "model": "claude-3-5-haiku",
+      "base_url": "",
+      "api_key_ref": "CLAUDE_API_KEY",
+      "temperature": 0.2,
+      "max_tokens": 1024
+    },
+    "it_worker": {
+      "provider": "ollama",
+      "model": "llama3.1:8b",
+      "base_url": "http://localhost:11434",
+      "api_key_ref": "",
+      "temperature": 0.2,
+      "max_tokens": 1024
+    },
+    "governance": {
+      "provider": "claude",
+      "model": "claude-3-5-sonnet",
+      "base_url": "",
+      "api_key_ref": "CLAUDE_API_KEY",
+      "temperature": 0,
+      "max_tokens": 1024
+    }
+  },
+  "runs": [
+    {
+      "id": "run-7382",
+      "request": "Onboard a new senior backend engineer John Doe (IT setup + HR contract)",
+      "status": "completed",
+      "requester": "wmploye@gmail.com",
+      "department": "HR/IT",
+      "ts": "2026-06-25T14:20:00Z",
+      "duration_ms": 4820,
+      "steps": [
+        {
+          "id": "log-1",
+          "run_id": "run-7382",
+          "ts": "2026-06-25T14:20:01Z",
+          "department": "Orchestrator",
+          "level": "planner",
+          "agent": "planner",
+          "assigned_by": null,
+          "action": "assigned task",
+          "phase": "Planning",
+          "status": "success",
+          "tools_used": [
+            "analyze_request_intent"
+          ],
+          "output": "Decomposed request into two operational branches: 1. HR Manager branch to handle employee onboarding contract setup. 2. IT Manager branch to provision a MacBook Pro and configure company credentials.",
+          "reasoning": "The user request contains both human resources and information technology actions. Decomposing into parallel tracks to optimize response speed and ensure correct department routing.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-2",
+          "run_id": "run-7382",
+          "ts": "2026-06-25T14:20:02Z",
+          "department": "HR",
+          "level": "manager",
+          "agent": "hr_manager",
+          "assigned_by": "planner",
+          "action": "assigned task",
+          "phase": "Sub-management",
+          "status": "success",
+          "tools_used": [
+            "get_onboarding_templates"
+          ],
+          "output": "Routed to HR Worker with standard Senior Backend Engineer contract template.",
+          "reasoning": "Determined that HR worker needs to execute contract generation. Pulling template-102 (Full-time US Employment Agreement) for backend engineering.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-3",
+          "run_id": "run-7382",
+          "ts": "2026-06-25T14:20:03Z",
+          "department": "HR",
+          "level": "worker",
+          "agent": "hr_worker",
+          "assigned_by": "hr_manager",
+          "action": "produced result",
+          "phase": "Execution",
+          "status": "success",
+          "tools_used": [
+            "generate_pdf_contract",
+            "sign_docusign_draft"
+          ],
+          "output": "Contract successfully drafted for John Doe with salary $145,000/yr. Sent draft to HR records system.",
+          "reasoning": "Populated templates with candidate details. Draft signed under id 'doc-89172'.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-4",
+          "run_id": "run-7382",
+          "ts": "2026-06-25T14:20:03Z",
+          "department": "IT",
+          "level": "manager",
+          "agent": "it_manager",
+          "assigned_by": "planner",
+          "action": "assigned task",
+          "phase": "Sub-management",
+          "status": "success",
+          "tools_used": [],
+          "output": "Instructed IT worker to provision laptop hardware and corporate accounts.",
+          "reasoning": "Routed hardware provisioning and email setups to IT worker agent queue.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-5",
+          "run_id": "run-7382",
+          "ts": "2026-06-25T14:20:04Z",
+          "department": "IT",
+          "level": "worker",
+          "agent": "it_worker",
+          "assigned_by": "it_manager",
+          "action": "produced result",
+          "phase": "Execution",
+          "status": "success",
+          "tools_used": [
+            "okta_create_user",
+            "google_workspace_create_user",
+            "procure_device_catalog"
+          ],
+          "output": "Okta account j.doe@aeropay.com created. Ordered 1x MacBook Pro M3 (Cost: $2,499) from authorized catalog.",
+          "reasoning": "Device order placed in catalog, cost registered. Accounts provisioned on Google Workspace & Okta.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-6",
+          "run_id": "run-7382",
+          "ts": "2026-06-25T14:20:04Z",
+          "department": "Governance",
+          "level": "governance",
+          "agent": "governance",
+          "assigned_by": null,
+          "action": "produced result",
+          "phase": "Governance Check",
+          "status": "success",
+          "tools_used": [
+            "audit_policy_thresholds"
+          ],
+          "output": "Passed all active security rules. Risk score: 12/100. Spend limit validation: MacBook Pro $2,499 falls within standard pre-approved engineer provisioning budget. Rule SEC-04 verified: contract signed & Okta registered in sync.",
+          "reasoning": "Evaluating run events against active policies. Cost $2,499 is below manager approval trigger for pre-budgeted equipment. Risk triggers nominal.",
+          "policy_citation": "SEC-04, DEV-LAPTOP-BUDGET",
+          "veto_rule": null
+        }
+      ]
+    },
+    {
+      "id": "run-8172",
+      "request": "Purchase 10 developer licenses for WebStorm ($3,500 total)",
+      "status": "completed",
+      "requester": "wmploye@gmail.com",
+      "department": "Procurement",
+      "ts": "2026-06-24T10:15:00Z",
+      "duration_ms": 3200,
+      "steps": [
+        {
+          "id": "log-7",
+          "run_id": "run-8172",
+          "ts": "2026-06-24T10:15:01Z",
+          "department": "Orchestrator",
+          "level": "planner",
+          "agent": "planner",
+          "assigned_by": null,
+          "action": "assigned task",
+          "phase": "Planning",
+          "status": "success",
+          "tools_used": [
+            "analyze_request_intent"
+          ],
+          "output": "Decomposed request: Procurement Worker to fetch vendor pricing. Finance Worker to check department software budget.",
+          "reasoning": "Single department focus, but spans vendor purchasing and finance authorization.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-8",
+          "run_id": "run-8172",
+          "ts": "2026-06-24T10:15:02Z",
+          "department": "Procurement",
+          "level": "worker",
+          "agent": "procurement_worker",
+          "assigned_by": "planner",
+          "action": "produced result",
+          "phase": "Execution",
+          "status": "success",
+          "tools_used": [
+            "jetbrains_vendor_api"
+          ],
+          "output": "Obtained quote of $3,500 for 10x WebStorm Enterprise annual licenses.",
+          "reasoning": "Contacted vendor API and retrieved standardized bulk pricing package.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-9",
+          "run_id": "run-8172",
+          "ts": "2026-06-24T10:15:02Z",
+          "department": "Governance",
+          "level": "governance",
+          "agent": "governance",
+          "assigned_by": null,
+          "action": "BLOCK",
+          "phase": "Governance Check",
+          "status": "failed",
+          "tools_used": [
+            "audit_policy_thresholds"
+          ],
+          "output": "BLOCKED: Spend request of $3,500 exceeds auto-approve threshold ($1,000). Triggered rule PROC-07: High-value spend request double verification. Human approval required from Department Manager.",
+          "reasoning": "Total purchase value ($3,500) exceeds $1,000 auto-approval rule. Halting workflow for manager authorization.",
+          "policy_citation": "PROC-07",
+          "veto_rule": "PROC-07"
+        },
+        {
+          "id": "log-10",
+          "run_id": "run-8172",
+          "ts": "2026-06-24T10:15:03Z",
+          "department": "Orchestrator",
+          "level": "planner",
+          "agent": "planner",
+          "assigned_by": null,
+          "action": "called tool",
+          "phase": "Human Intervention",
+          "status": "success",
+          "tools_used": [
+            "clear_governance_block"
+          ],
+          "output": "VETO CLEARED: Department Manager (manager@aeropay.com) reviewed the purchase quote and manually approved the transaction at 10:15:03Z.",
+          "reasoning": "Manual manager validation received. Proceeding with database registration.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-11",
+          "run_id": "run-8172",
+          "ts": "2026-06-24T10:15:03Z",
+          "department": "Finance",
+          "level": "worker",
+          "agent": "finance_worker",
+          "assigned_by": "planner",
+          "action": "produced result",
+          "phase": "Execution",
+          "status": "success",
+          "tools_used": [
+            "stripe_charge_card"
+          ],
+          "output": "Stripe transaction tx_981273 successful for $3,500. Corporate invoice sent to jetbrains@aeropay.com.",
+          "reasoning": "Budget has capacity. Card charged under vendor invoice.",
+          "policy_citation": null,
+          "veto_rule": null
+        }
+      ]
+    },
+    {
+      "id": "run-9023",
+      "request": "Urgent wire transfer of $25,000 for server license renewals",
+      "status": "failed",
+      "requester": "wmploye@gmail.com",
+      "department": "Finance",
+      "ts": "2026-06-23T08:10:00Z",
+      "duration_ms": 1100,
+      "steps": [
+        {
+          "id": "log-12",
+          "run_id": "run-9023",
+          "ts": "2026-06-23T08:10:01Z",
+          "department": "Orchestrator",
+          "level": "planner",
+          "agent": "planner",
+          "assigned_by": null,
+          "action": "assigned task",
+          "phase": "Planning",
+          "status": "success",
+          "tools_used": [
+            "analyze_request_intent"
+          ],
+          "output": "Decomposed request: Wire transfer mapping to Finance Worker. Request amount: $25,000.",
+          "reasoning": "High-value financial transfer requires checking liquidity and policy compliance before routing to payment executor.",
+          "policy_citation": null,
+          "veto_rule": null
+        },
+        {
+          "id": "log-13",
+          "run_id": "run-9023",
+          "ts": "2026-06-23T08:10:01Z",
+          "department": "Governance",
+          "level": "governance",
+          "agent": "governance",
+          "assigned_by": null,
+          "action": "BLOCK",
+          "phase": "Governance Check",
+          "status": "failed",
+          "tools_used": [
+            "audit_policy_thresholds"
+          ],
+          "output": "CRITICAL BLOCK: Requested amount $25,000 exceeds hard spend ceiling of $20,000. Under current safety rules, transactions above $20,000 are rejected unconditionally. Reason: Risk score: 85/100 (exceeds threshold of 75). Run status set to FAILED.",
+          "reasoning": "Severe policy violation. Transaction amount exceeds the absolute maximum threshold defined by corporate charter.",
+          "policy_citation": "HARD-SPEND-LIMIT",
+          "veto_rule": "HARD-SPEND-LIMIT"
+        }
+      ]
+    },
+    {
+      "id": "run-9437",
+      "request": "Onboard new senior frontend developer Sarah Jenkins (HR contract draft + salary $120,000)",
+      "status": "failed",
+      "requester": "employee@gmail.com",
+      "department": "HR",
+      "ts": "2026-06-26T03:26:30.897Z",
+      "duration_ms": 0,
+      "steps": [
+        {
+          "id": "log-run-9437-1",
+          "run_id": "run-9437",
+          "department": "Orchestrator",
+          "level": "planner",
+          "agent": "planner",
+          "assigned_by": null,
+          "action": "assigned task",
+          "phase": "Planning",
+          "status": "success",
+          "tools_used": [
+            "analyze_request_intent"
+          ],
+          "output": "Decomposed request into department tasks for: HR. Detectable spend budget checked: $120000.",
+          "reasoning": "User requested actions affecting: HR. Spawning manager agents to assign worker tasks.",
+          "ts": "2026-06-26T03:26:31.913Z"
+        },
+        {
+          "id": "log-run-9437-2",
+          "run_id": "run-9437",
+          "department": "HR",
+          "level": "manager",
+          "agent": "hr_manager",
+          "assigned_by": "planner",
+          "action": "assigned task",
+          "phase": "Sub-management",
+          "status": "success",
+          "tools_used": [
+            "get_hr_guidelines"
+          ],
+          "output": "Instructed HR Worker to execute subtask relating to: Onboard new senior frontend developer Sa...",
+          "reasoning": "Routing specialized subtask to HR department worker for execution under standard SLAs.",
+          "ts": "2026-06-26T03:26:32.928Z"
+        },
+        {
+          "id": "log-run-9437-3",
+          "run_id": "run-9437",
+          "department": "HR",
+          "level": "worker",
+          "agent": "hr_worker",
+          "assigned_by": "hr_manager",
+          "action": "produced result",
+          "phase": "Execution",
+          "status": "success",
+          "tools_used": [
+            "generate_pdf_contract",
+            "docusign_draft"
+          ],
+          "output": "Drafted onboarding contract and employment agreement for Sarah Jenkins. Registering files.",
+          "reasoning": "Executing targeted department functions utilizing authorized external tools and local registries.",
+          "ts": "2026-06-26T03:26:33.941Z"
+        },
+        {
+          "id": "log-run-9437-4",
+          "run_id": "run-9437",
+          "department": "Governance",
+          "level": "governance",
+          "agent": "governance",
+          "assigned_by": null,
+          "action": "BLOCK",
+          "phase": "Governance Check",
+          "status": "failed",
+          "tools_used": [
+            "audit_policy_rules"
+          ],
+          "output": "CRITICAL BLOCK: Requested spend volume $120000 exceeds hard corporate ceiling of $20000. Transaction rejected unconditionally.",
+          "reasoning": "Severe security policy violation. Risk score evaluated at 92/100. Aborting running workflow.",
+          "policy_citation": "HARD-SPEND-LIMIT",
+          "veto_rule": "HARD-SPEND-LIMIT",
+          "ts": "2026-06-26T03:26:34.954Z"
+        }
+      ]
+    }
+  ]
+}
