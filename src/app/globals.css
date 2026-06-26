@@ -1,0 +1,495 @@
+@import "tailwindcss";
+
+@theme {
+  /* Muted deep teal + terracotta copper — sophisticated, low-neon.
+     Legacy names kept (brand-cyan/violet) so existing markup keeps working,
+     but remapped: "cyan" -> muted teal, "violet" -> terracotta copper. */
+  --color-brand-cyan: #3a9d8f;          /* muted teal (was neon cyan) */
+  --color-brand-teal: #3a9d8f;
+  --color-brand-teal-deep: #2c7a6f;
+  --color-brand-teal-dark: #0c2a4a;     /* used for button offset shadow */
+  --color-brand-violet: #3b82f6;        /* electric blue (OrchestrAI accent) */
+  --color-brand-copper: #3b82f6;        /* legacy alias -> blue */
+  --color-brand-copper-deep: #2563eb;
+  --color-brand-blue: #3b82f6;
+  --color-brand-blue-deep: #2563eb;
+  /* theme-aware surfaces — driven by --bg/--card/etc below, flip with theme */
+  --color-brand-bg: var(--bg);
+  --color-brand-card: var(--card);
+  --color-brand-card-light: var(--card-light);
+  --color-brand-border: var(--border);
+  --color-brand-border-glow: rgba(58, 157, 143, 0.20);
+  --color-foreground: var(--foreground);
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: var(--font-grotesk), var(--font-inter), system-ui, sans-serif;
+  --font-grotesk: var(--font-grotesk), system-ui, sans-serif;
+}
+
+/* ── LIGHT theme (default :root) ── */
+:root {
+  --bg: #f3f4f1;
+  --card: #ffffff;
+  --card-light: #f7f8f5;
+  --border: rgba(10, 20, 16, 0.10);
+  --background: #f3f4f1;
+  --foreground: #0d1714;
+  --surface-soft: rgba(10, 20, 16, 0.04);   /* replaces white/5 on light */
+  --surface-mid: rgba(10, 20, 16, 0.07);
+  --hairline: rgba(10, 20, 16, 0.08);
+  color-scheme: light;
+}
+
+/* ── DARK theme ── */
+.dark {
+  --bg: #070b0e;
+  --card: #0c1217;
+  --card-light: #141c23;
+  --border: rgba(255, 255, 255, 0.06);
+  --background: #070b0e;
+  --foreground: #dfe6e4;
+  --surface-soft: rgba(255, 255, 255, 0.05);
+  --surface-mid: rgba(255, 255, 255, 0.08);
+  --hairline: rgba(255, 255, 255, 0.06);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* ── Global keyboard focus system (a11y: visible focus, High severity) ──
+   :focus-visible = keyboard only, so mouse clicks don't show a ring.
+   Themed teal ring + offset; works on every interactive element. */
+:where(a, button, input, textarea, select, [tabindex], [role="button"]):focus-visible {
+  outline: 2px solid var(--color-brand-teal);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* never leave an element with no focus indicator */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* clickable affordance: pointer on enabled buttons + role-buttons (a11y) */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+label[for] {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════
+   LIGHT-THEME readability overrides.
+   Components hardcode dark-mode Tailwind classes. In light
+   theme (:root:not(.dark)) retint them coherently — no .tsx edits.
+   Strategy:
+     - text-white / gray-* -> dark ink ramp
+     - bg-slate-900* card surfaces -> white cards
+     - bg-slate-950* = CODE / MAP panels -> STAY DARK (terminal look)
+     - teal/copper accent text -> darker so it reads on light
+     - status colors (green/amber/emerald) -> deepened
+═══════════════════════════════════════════════ */
+:root {
+  --ink-1: #0d1714;   /* strongest text */
+  --ink-2: #243530;   /* body */
+  --ink-3: #455650;   /* muted */
+  --ink-4: #647069;   /* faint */
+  --teal-ink: #1f6b60;     /* teal text on light */
+  --copper-ink: #1d4ed8;   /* (legacy name) electric-blue text on light */
+}
+
+/* ── text ramp ── */
+:root:not(.dark) .text-white { color: var(--ink-1) !important; }
+:root:not(.dark) .text-gray-100,
+:root:not(.dark) .text-gray-200,
+:root:not(.dark) .text-gray-300 { color: var(--ink-2) !important; }
+:root:not(.dark) .text-gray-400 { color: var(--ink-3) !important; }
+:root:not(.dark) .text-gray-500,
+:root:not(.dark) .text-gray-600 { color: var(--ink-4) !important; }
+
+/* ── accent text deepened for contrast ── */
+:root:not(.dark) .text-brand-cyan { color: var(--teal-ink) !important; }
+:root:not(.dark) .text-brand-violet,
+:root:not(.dark) .text-brand-copper { color: var(--copper-ink) !important; }
+:root:not(.dark) .text-emerald-400,
+:root:not(.dark) .text-green-400 { color: #15803d !important; }
+:root:not(.dark) .text-amber-300 { color: #b45309 !important; }
+:root:not(.dark) .text-purple-400 { color: var(--copper-ink) !important; }
+:root:not(.dark) .text-red-400 { color: #dc2626 !important; }
+
+/* ── card surfaces (slate-900*) -> light, keep slight glass ── */
+:root:not(.dark) .bg-slate-900\/40,
+:root:not(.dark) .bg-slate-900\/60,
+:root:not(.dark) .bg-slate-900\/20,
+:root:not(.dark) .bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: rgba(10, 20, 16, 0.08);
+}
+
+/* ── code / map panels (slate-950*) STAY DARK — intentional terminal ── */
+:root:not(.dark) .bg-slate-950,
+:root:not(.dark) .bg-slate-950\/60,
+:root:not(.dark) .bg-slate-950\/70,
+:root:not(.dark) .bg-slate-950\/80 {
+  background-color: #0c1217 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+/* text inside dark panels must stay light even in light theme */
+:root:not(.dark) .bg-slate-950 .text-white,
+:root:not(.dark) .bg-slate-950\/60 .text-white,
+:root:not(.dark) .bg-slate-950\/70 .text-white,
+:root:not(.dark) .bg-slate-950\/80 .text-white { color: #eef2f0 !important; }
+:root:not(.dark) .bg-slate-950 .text-gray-300,
+:root:not(.dark) .bg-slate-950 .text-gray-400,
+:root:not(.dark) .bg-slate-950\/60 .text-gray-300,
+:root:not(.dark) .bg-slate-950\/60 .text-gray-400,
+:root:not(.dark) .bg-slate-950\/70 .text-gray-300,
+:root:not(.dark) .bg-slate-950\/70 .text-gray-400,
+:root:not(.dark) .bg-slate-950\/80 .text-gray-300,
+:root:not(.dark) .bg-slate-950\/80 .text-gray-400 { color: #aeb8b4 !important; }
+:root:not(.dark) .bg-slate-950 .text-gray-500,
+:root:not(.dark) .bg-slate-950\/60 .text-gray-500,
+:root:not(.dark) .bg-slate-950\/70 .text-gray-500,
+:root:not(.dark) .bg-slate-950\/80 .text-gray-500 { color: #6b7670 !important; }
+
+/* ── white-alpha hairlines/fills -> dark-alpha on light ── */
+:root:not(.dark) .border-white\/5,
+:root:not(.dark) .border-white\/10,
+:root:not(.dark) .border-white\/20 { border-color: rgba(10, 20, 16, 0.10) !important; }
+:root:not(.dark) .bg-white\/5 { background-color: rgba(10, 20, 16, 0.035) !important; }
+:root:not(.dark) .bg-white\/10 { background-color: rgba(10, 20, 16, 0.06) !important; }
+/* but white-alpha INSIDE dark panels stays light */
+:root:not(.dark) .bg-slate-950 .border-white\/5,
+:root:not(.dark) .bg-slate-950\/60 .border-white\/5,
+:root:not(.dark) .bg-slate-950\/70 .border-white\/5,
+:root:not(.dark) .bg-slate-950\/80 .border-white\/5 { border-color: rgba(255,255,255,0.08) !important; }
+
+/* accent pills: bg-brand-cyan/10 needs a touch more fill + darker text on light */
+:root:not(.dark) .bg-brand-cyan\/10 { background-color: rgba(31, 107, 96, 0.10) !important; }
+:root:not(.dark) .border-brand-cyan\/20 { border-color: rgba(31, 107, 96, 0.30) !important; }
+
+/* page gradient washes (cyan/10 overlays) too strong on light -> soften */
+:root:not(.dark) .from-brand-cyan\/10,
+:root:not(.dark) .from-brand-teal\/10 { --tw-gradient-from: rgba(58,157,143,0.06) !important; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-mid);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a9d8f;
+}
+
+/* Custom visual utilities — line/dot color flips with theme */
+.bg-grid-pattern {
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, var(--hairline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hairline) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(var(--surface-mid) 1px, transparent 1px);
+}
+
+/* headline gradient: light->dark text in light mode, white->teal in dark */
+.text-gradient {
+  background: linear-gradient(135deg, #0d1714 30%, #2c7a6f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dark .text-gradient {
+  background: linear-gradient(135deg, #ffffff 30%, #a9c4be 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* legacy name kept; now teal -> electric blue (OrchestrAI) */
+.text-gradient-cyan-purple {
+  background: linear-gradient(120deg, #2c7a6f 0%, #3a9d8f 45%, #2563eb 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dark .text-gradient-cyan-purple {
+  background: linear-gradient(120deg, #5cb6a8 0%, #3a9d8f 40%, #3b82f6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-card {
+  /* light: near-solid white card w/ soft layered shadow + crisp hairline */
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px rgba(10, 20, 16, 0.06),
+    0 10px 30px -8px rgba(10, 20, 16, 0.12);
+}
+.dark .glass-card {
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* ambient glow spots (muted teal / terracotta) */
+.glow-spot-primary {
+  background: radial-gradient(circle, rgba(58, 157, 143, 0.30) 0%, transparent 70%);
+}
+.glow-spot-secondary {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.26) 0%, transparent 70%);
+}
+
+/* slow spin for status indicators */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
+/* ── Icon gradient SYSTEM — fixed 3-class set (no per-icon rainbow) ──
+   See design.md §8. Map every icon chip to one of these. */
+.icon-grad-teal {
+  background-image: linear-gradient(135deg, #4cb8a8 0%, #2c7a6f 100%);
+}
+.icon-grad-copper,
+.icon-grad-blue {
+  background-image: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+}
+.icon-grad-mix {
+  background-image: linear-gradient(135deg, #3a9d8f 0%, #3b82f6 100%);
+}
+
+.glow-shadow-cyan {
+  box-shadow: 0 0 40px rgba(58, 157, 143, 0.16);
+}
+
+.glow-shadow-violet {
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.16);
+}
+
+/* Custom keyframes for infinite scrolling or floating items */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s ease-in-out infinite;
+}
+
+/* Premium Moving Background Orbs keyframes */
+@keyframes orb-move-1 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  25% { transform: translate(150px, -100px) scale(1.15); }
+  50% { transform: translate(-80px, 120px) scale(0.9); }
+  75% { transform: translate(100px, 50px) scale(1.1); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes orb-move-2 {
+  0% { transform: translate(0px, 0px) scale(1.05); }
+  33% { transform: translate(-180px, 80px) scale(0.85); }
+  66% { transform: translate(120px, -150px) scale(1.2); }
+  100% { transform: translate(0px, 0px) scale(1.05); }
+}
+
+@keyframes orb-move-3 {
+  0% { transform: translate(0px, 0px) scale(0.95); }
+  25% { transform: translate(-120px, -100px) scale(1.1); }
+  50% { transform: translate(200px, 60px) scale(0.85); }
+  75% { transform: translate(-60px, 130px) scale(1.05); }
+  100% { transform: translate(0px, 0px) scale(0.95); }
+}
+
+.animate-orb-1 {
+  animation: orb-move-1 12s infinite ease-in-out;
+}
+
+.animate-orb-2 {
+  animation: orb-move-2 15s infinite ease-in-out;
+}
+
+.animate-orb-3 {
+  animation: orb-move-3 18s infinite ease-in-out;
+}
+
+/* Premium velvet grain noise overlay */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+}
+/* grain is a dark-mode texture; nearly hide it on light to avoid haze */
+:root:not(.dark) .noise-overlay { opacity: 0.15 !important; }
+
+/* Blinking caret for typewriter headline */
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.typewriter-caret {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 400;
+  color: #3a9d8f;
+  animation: caret-blink 1s step-end infinite;
+  -webkit-text-fill-color: #3a9d8f; /* override gradient clip on caret */
+}
+
+/* Static aurora fallback when WebGL unavailable or reduced-motion */
+.aurora-fallback {
+  background:
+    radial-gradient(40% 50% at 20% 25%, rgba(58, 157, 143, 0.16) 0%, transparent 70%),
+    radial-gradient(45% 55% at 80% 70%, rgba(59, 130, 246, 0.11) 0%, transparent 70%),
+    radial-gradient(50% 60% at 60% 10%, rgba(44, 122, 111, 0.10) 0%, transparent 75%);
+}
+
+/* Floating nav capsule — faint animated teal/copper glow ring */
+.nav-capsule-glow {
+  position: relative;
+}
+.nav-capsule-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  padding: 1px;
+  background: linear-gradient(
+    120deg,
+    rgba(58, 157, 143, 0.5),
+    rgba(59, 130, 246, 0.4),
+    rgba(58, 157, 143, 0.5)
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  animation: capsule-shimmer 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes capsule-shimmer {
+  to { background-position: 200% 0; }
+}
+
+/* Top scroll-progress bar */
+.scroll-progress {
+  background: linear-gradient(90deg, #3a9d8f 0%, #2c7a6f 50%, #3b82f6 100%);
+  box-shadow: 0 0 10px rgba(58, 157, 143, 0.45);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Signature button — neo-brutalist: flat solid, squared
+   corners, hard offset shadow that collapses on press.
+   No gradients. .btn-brutal (copper) / .btn-brutal-ghost (teal outline).
+═══════════════════════════════════════════════════════ */
+.btn-brutal {
+  --offset: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  color: #0a1410;
+  background: #3b82f6;                 /* terracotta */
+  border: 1.5px solid #0a1410;
+  box-shadow: var(--offset) var(--offset) 0 0 #0c2a4a;  /* hard teal-dark shadow */
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+  cursor: pointer;
+}
+.btn-brutal:hover {
+  background: #60a5fa;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 #0c2a4a;
+}
+.btn-brutal:active {
+  transform: translate(var(--offset), var(--offset));
+  box-shadow: 0 0 0 0 #0c2a4a;
+}
+/* disabled: dim + no interaction (a11y: distinct from enabled) */
+.btn-brutal:disabled,
+.btn-brutal[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--offset) var(--offset) 0 0 #0c2a4a;
+}
+.btn-brutal:disabled:hover,
+.btn-brutal[aria-disabled="true"]:hover {
+  background: #3b82f6;
+  transform: none;
+}
+
+/* Teal-outline variant for secondary actions */
+.btn-brutal-ghost {
+  --offset: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  color: #1f6b60;            /* light theme: dark teal */
+  background: transparent;
+  border: 1.5px solid #3a9d8f;
+  box-shadow: var(--offset) var(--offset) 0 0 rgba(58, 157, 143, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, color 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+}
+.dark .btn-brutal-ghost { color: #c9ddd8; }   /* dark theme: light teal */
+.btn-brutal-ghost:hover {
+  color: #0a1410;
+  background: #3a9d8f;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 rgba(58, 157, 143, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-brutal, .btn-brutal-ghost { transition: background 0.2s ease, color 0.2s ease; }
+  .btn-brutal:hover, .btn-brutal-ghost:hover { transform: none; }
+}
+
+/* Honor reduced-motion: kill drift/float/pulse animations globally */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-pulse-subtle,
+  .animate-spin-slow,
+  .nav-capsule-glow::before,
+  .animate-orb-1,
+  .animate-orb-2,
+  .animate-orb-3 {
+    animation: none !important;
+  }
+}
+
