@@ -81,13 +81,13 @@ export default function Hero() {
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Text Content Column (Left 6 columns) */}
-          <div className="lg:col-span-6 space-y-6 text-left">
+          <div className="lg:col-span-6 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
             {/* Headline — colored phrase typed dynamically */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl font-black text-text-primary leading-[1.1] tracking-tight"
             >
               The Dynamic Adaptive{" "}
               <Typewriter
@@ -106,7 +106,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-gray-300 font-sans text-base sm:text-lg leading-relaxed max-w-xl font-normal tracking-[-0.005em] text-pretty"
+              className="text-text-secondary font-sans text-base sm:text-lg leading-relaxed max-w-xl font-normal tracking-[-0.005em] text-pretty mx-auto lg:mx-0"
             >
               OrchestrAI intelligently assembles specialized agent teams, recalls
               institutional memory, anticipates risks, and orchestrates complex
@@ -118,7 +118,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap items-center gap-4 pt-4"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
             >
               <MagneticButton
                 href="#cta"
@@ -144,29 +144,29 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="grid grid-cols-3 gap-6 pt-8 border-t border-white/5 max-w-md text-left"
+              className="grid grid-cols-3 gap-6 pt-8 border-t border-brand-border max-w-md w-full text-center lg:text-left mx-auto lg:mx-0"
             >
               <div>
-                <span className="text-[10px] text-gray-500 font-mono uppercase block">
+                <span className="text-[10px] text-text-muted font-mono uppercase block">
                   Specialized Agents
                 </span>
-                <span className="text-xl font-bold text-white mt-1 block">
+                <span className="text-xl font-bold text-text-primary mt-1 block">
                   On-Demand
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-500 font-mono uppercase block">
+                <span className="text-[10px] text-text-muted font-mono uppercase block">
                   Audit Trail
                 </span>
-                <span className="text-xl font-bold text-white mt-1 block">
+                <span className="text-xl font-bold text-text-primary mt-1 block">
                   100% Traced
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-500 font-mono uppercase block">
+                <span className="text-[10px] text-text-muted font-mono uppercase block">
                   Human Control
                 </span>
-                <span className="text-xl font-bold text-white mt-1 block">
+                <span className="text-xl font-bold text-text-primary mt-1 block">
                   Configurable
                 </span>
               </div>

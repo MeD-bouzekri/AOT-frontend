@@ -34,7 +34,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-slate-950 border-t border-white/5 pt-16 pb-8 relative overflow-hidden">
+    <footer className="bg-slate-950 border-t border-white/5 pt-16 pb-8 relative overflow-hidden terminal-console !border-x-0 !border-b-0 !rounded-none">
       
       {/* Background visual detail */}
       <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />

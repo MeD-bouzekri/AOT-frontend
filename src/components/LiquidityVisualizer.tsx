@@ -87,7 +87,7 @@ export default function LiquidityVisualizer() {
   const formatBalance = (bal: number) => `${bal.toLocaleString("en-US")} tasks`;
 
   return (
-    <section id="liquidity" className="py-24 relative border-t border-white/5">
+    <section id="liquidity" className="py-24 relative border-t border-brand-border">
       {/* Background ambient lighting */}
       <div className="absolute top-10 right-1/4 w-[500px] h-[500px] rounded-full glow-spot-primary opacity-20 pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[450px] h-[450px] rounded-full glow-spot-secondary opacity-15 pointer-events-none" />
@@ -97,20 +97,17 @@ export default function LiquidityVisualizer() {
         {/* Header Block */}
         <Reveal className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-16">
           <div className="lg:col-span-8">
-            <span className="text-xs font-bold uppercase tracking-widest text-brand-cyan font-mono px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
-              Live Orchestration
-            </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-4 font-display">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-text-primary font-display">
               Watch the Agent Graph Think
             </h2>
-            <p className="text-gray-400 mt-4 text-base md:text-lg max-w-2xl">
+            <p className="text-text-secondary mt-4 text-base md:text-lg max-w-2xl">
               A living view of the orchestrator coordinating its specialized agents — validating, approving, executing, and flagging anomalies in real time, with every event traced.
             </p>
           </div>
           <div className="lg:col-span-4 flex justify-start lg:justify-end">
-            <div className="glass-card px-4 py-2.5 rounded-full border border-white/10 flex items-center gap-2">
+            <div className="glass-card px-4 py-2.5 rounded-full border border-brand-border flex items-center gap-2 bg-brand-card/50">
               <RefreshCw className="w-4 h-4 text-brand-cyan animate-spin-slow" />
-              <span className="text-xs font-mono font-bold text-gray-300">
+              <span className="text-xs font-mono font-bold text-text-secondary">
                 Orchestrator Status: All Agents Healthy
               </span>
             </div>
@@ -121,12 +118,12 @@ export default function LiquidityVisualizer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Map/Schematic Canvas (Left 8 columns) */}
-          <div className="lg:col-span-8 glass-card rounded-3xl border border-white/5 bg-slate-900/20 p-6 md:p-8 flex flex-col justify-between min-h-[400px] relative overflow-hidden">
+          <div className="lg:col-span-8 glass-card rounded-3xl border border-brand-border bg-brand-card/30 p-6 md:p-8 flex flex-col justify-between min-h-[400px] relative overflow-hidden shadow-sm">
             
             {/* Dots overlay grid */}
             <div className="absolute inset-0 bg-dot-pattern opacity-30 pointer-events-none" />
 
-            <div className="relative flex-1 w-full h-[320px] rounded-2xl bg-slate-950/60 border border-white/5 overflow-hidden flex items-center justify-center p-4">
+            <div className="relative flex-1 w-full h-[320px] rounded-2xl terminal-console overflow-hidden flex items-center justify-center p-4">
               
               {/* Simulated Map Outline Nodes */}
               <div className="w-full h-full relative">
@@ -185,7 +182,7 @@ export default function LiquidityVisualizer() {
                       transform: "translate(-50%, -50%)"
                     }}
                   >
-                    <div className="glass-card p-2 rounded-xl border border-white/10 flex items-center gap-2 shadow-lg min-w-[130px] hover:border-brand-cyan/40 transition-all duration-300">
+                    <div className="bg-slate-950/80 border border-white/10 p-2 rounded-xl flex items-center gap-2 shadow-lg min-w-[130px] hover:border-brand-cyan/45 transition-all duration-300">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand-cyan/15 text-brand-cyan text-xs font-bold font-mono">
                         {node.flag}
                       </span>
@@ -215,7 +212,7 @@ export default function LiquidityVisualizer() {
             </div>
 
             {/* Bottom info row */}
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-400 font-mono">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-xs text-text-muted font-mono">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
@@ -230,7 +227,7 @@ export default function LiquidityVisualizer() {
                   <span>Anomaly Flagged</span>
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-gray-300">
+              <div className="flex items-center gap-1 text-text-secondary">
                 <Globe className="w-3.5 h-3.5" />
                 <span>Agents Orchestrating Live</span>
               </div>
@@ -239,12 +236,12 @@ export default function LiquidityVisualizer() {
           </div>
 
           {/* Activity Log (Right 4 columns) */}
-          <div className="lg:col-span-4 glass-card rounded-3xl border border-white/5 bg-slate-900/20 p-6 flex flex-col justify-between">
+          <div className="lg:col-span-4 glass-card rounded-3xl border border-brand-border bg-brand-card/30 p-6 flex flex-col justify-between shadow-sm">
             <div>
-              <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
+              <div className="flex items-center justify-between border-b border-brand-border pb-4 mb-4">
                 <div className="flex items-center space-x-2">
                   <Layers className="w-4.5 h-4.5 text-brand-cyan" />
-                  <span className="text-sm font-bold text-white">Live Workflow Feed</span>
+                  <span className="text-sm font-bold text-text-primary font-display">Live Workflow Feed</span>
                 </div>
                 <TrendingUp className="w-4 h-4 text-brand-cyan" />
               </div>
@@ -259,16 +256,16 @@ export default function LiquidityVisualizer() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="p-3 bg-slate-950/60 rounded-xl border border-white/5 font-mono text-[10px] space-y-1"
+                      className="p-3 bg-brand-card-light rounded-xl border border-brand-border font-mono text-[10px] space-y-1"
                     >
-                      <div className="flex justify-between items-center text-gray-400">
+                      <div className="flex justify-between items-center text-text-muted">
                         <span>{log.timestamp}</span>
                         <span
                           className={`px-1.5 py-0.5 rounded ${
                             log.dest === "Flagged"
-                              ? "text-amber-400 bg-amber-400/10"
+                              ? "text-amber-500 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-400/10"
                               : log.dest === "Human review"
-                              ? "text-brand-blue bg-brand-blue/10"
+                              ? "text-brand-cyan bg-brand-cyan/10"
                               : "text-brand-cyan bg-brand-cyan/10"
                           }`}
                         >
@@ -279,17 +276,17 @@ export default function LiquidityVisualizer() {
                             : "Traced"}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-white font-bold text-xs mt-1">
+                      <div className="flex justify-between items-center text-text-primary font-bold text-xs mt-1">
                         <span className="flex items-center gap-1">
                           {log.source} 
-                          <span className="text-gray-500 font-normal">→</span> 
+                          <span className="text-text-muted font-normal">→</span> 
                           {log.dest}
                         </span>
                         <span>{log.amount}</span>
                       </div>
-                      <div className="text-gray-500 text-[9px] flex justify-between">
+                      <div className="text-text-muted text-[9px] flex justify-between">
                         <span>Traced · audit log written</span>
-                        <span className="text-green-400">{log.latency}</span>
+                        <span className="text-emerald-500 dark:text-emerald-400 font-bold">{log.latency}</span>
                       </div>
                     </motion.div>
                   ))}
@@ -298,15 +295,15 @@ export default function LiquidityVisualizer() {
             </div>
 
             {/* Stats Summary Widget inside feed card */}
-            <div className="bg-slate-950/70 p-4 rounded-2xl border border-white/5 mt-6">
-              <div className="flex justify-between items-center text-[10px] text-gray-400 font-mono">
+            <div className="bg-brand-card-light p-4 rounded-2xl border border-brand-border mt-6">
+              <div className="flex justify-between items-center text-[10px] text-text-muted font-mono">
                 <span>WORKFLOWS ORCHESTRATED</span>
                 <span className="text-brand-cyan">24H</span>
               </div>
-              <div className="text-lg font-black text-white font-mono mt-1">
+              <div className="text-lg font-black text-text-primary font-mono mt-1">
                 12,480
               </div>
-              <div className="flex items-center gap-1 mt-1 text-[9px] text-emerald-400 font-mono font-bold">
+              <div className="flex items-center gap-1 mt-1 text-[9px] text-emerald-500 dark:text-emerald-400 font-mono font-bold">
                 <span>100% traced · 0 untracked actions</span>
               </div>
             </div>

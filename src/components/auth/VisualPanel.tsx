@@ -2,28 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ShieldCheck, Zap, FileClock } from "lucide-react";
-import { LogoMark } from "@/components/Logo";
-
-type Mode = "signin" | "signup";
-
-const copy: Record<Mode, { title: string; sub: string }> = {
-  signin: {
-    title: "Welcome back, orchestrator.",
-    sub: "Resume your workflows, agents, and audit trails — exactly where you left off.",
-  },
-  signup: {
-    title: "Orchestrate your enterprise.",
-    sub: "Specialized agent teams, policy-as-code governance, and full traceability.",
-  },
-};
+import { WordmarkLogo } from "@/components/Logo";
 
 /**
- * The brand side of the auth split — a deep accent-gradient panel with a
- * subtle node motif. No blur orbs / aurora; just a clean gradient + grid.
+ * The brand side of the auth split — a deep accent-gradient panel.
+ * Always shows the white wordmark logo (matching the landing page navbar).
  */
-export default function VisualPanel({ mode }: { mode: Mode }) {
-  const c = copy[mode];
-
+export default function VisualPanel() {
   return (
     <div className="relative h-full w-full overflow-hidden rounded-2xl">
       {/* accent gradient field */}
@@ -41,27 +26,23 @@ export default function VisualPanel({ mode }: { mode: Mode }) {
       <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent" />
 
       <div className="relative z-10 flex h-full flex-col justify-between p-10 lg:p-12 text-white">
-        {/* brand */}
-        <div className="flex items-center gap-2.5">
-          <LogoMark size={26} variant="white" />
-          <span className="font-display text-lg font-semibold tracking-tight">
-            Orchestr<span className="text-white/80">AI</span>
-          </span>
+        {/* brand — always white wordmark on the accent-gradient panel */}
+        <div className="flex items-center dark">
+          <WordmarkLogo height={28} />
         </div>
 
         {/* headline */}
         <motion.div
-          key={mode}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-sm"
         >
           <h2 className="font-display text-3xl font-semibold leading-tight lg:text-4xl">
-            {c.title}
+            Welcome back, orchestrator.
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-white/85 lg:text-base">
-            {c.sub}
+            Resume your workflows, agents, and audit trails — exactly where you left off.
           </p>
         </motion.div>
 

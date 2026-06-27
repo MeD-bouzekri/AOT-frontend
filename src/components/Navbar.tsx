@@ -16,6 +16,7 @@ const navLinks = [
   { name: "Sprint Updates", href: "#sprint", id: "nav-link-sprint", section: "sprint" },
   { name: "Features", href: "#features", id: "nav-link-features", section: "features" },
   { name: "Liquidity", href: "#liquidity", id: "nav-link-liquidity", section: "liquidity" },
+  { name: "Pricing", href: "#pricing", id: "nav-link-pricing", section: "pricing" },
 ];
 
 export default function Navbar({ showSplash }: NavbarProps) {
@@ -109,7 +110,7 @@ export default function Navbar({ showSplash }: NavbarProps) {
                     id={link.id}
                     onMouseEnter={() => setHovered(link.section)}
                     className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 ${
-                      isActive ? "text-white" : "text-gray-300 hover:text-white"
+                      isActive ? "text-text-primary" : "text-text-secondary hover:text-text-primary"
                     }`}
                   >
                     {/* the pill slides under whichever link is hot */}
@@ -117,7 +118,7 @@ export default function Navbar({ showSplash }: NavbarProps) {
                       <motion.span
                         layoutId="nav-pill"
                         transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                        className="absolute inset-0 rounded-full bg-white/[0.06] border border-brand-border"
+                        className="absolute inset-0 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-brand-border"
                       />
                     )}
                     {/* active link gets a teal underglow dot */}
@@ -146,19 +147,18 @@ export default function Navbar({ showSplash }: NavbarProps) {
               <Link
                 href="/auth"
                 id="nav-signin"
-                className="text-sm font-semibold text-gray-300 hover:text-brand-teal transition-colors"
+                className="text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors"
               >
                 Sign in
               </Link>
 
-              {/* Sign up — brutal button */}
+              {/* Get Access — filled accent button */}
               <Link
-                href="/auth"
-                id="nav-signup"
+                href="#cta"
+                id="nav-get-access"
                 className="btn-brutal group !py-2 !px-4 !text-xs"
-                style={{ ["--offset" as string]: "3px" }}
               >
-                Sign up
+                Get Access
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -192,7 +192,7 @@ export default function Navbar({ showSplash }: NavbarProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-[72px] z-40 md:hidden bg-brand-bg/95 backdrop-blur-lg border-b border-white/10 px-4 pt-4 pb-6 shadow-2xl"
+            className="fixed inset-x-0 top-[72px] z-40 md:hidden bg-brand-bg/95 backdrop-blur-lg border-b border-brand-border px-4 pt-4 pb-6 shadow-2xl"
           >
             <div className="flex flex-col space-y-4">
               {navLinks.map((link) => (
@@ -201,31 +201,21 @@ export default function Navbar({ showSplash }: NavbarProps) {
                   href={link.href}
                   id={`${link.id}-mobile`}
                   onClick={() => setIsOpen(false)}
-                  className="text-base font-semibold text-gray-200 hover:text-white transition-colors duration-150 py-2 border-b border-white/5"
+                  className="text-base font-semibold text-text-secondary hover:text-text-primary transition-colors duration-150 py-2 border-b border-brand-border/40"
                 >
                   {link.name}
                 </a>
               ))}
 
-              {/* Sign in / Sign up */}
-              <div className="flex items-center gap-3 pt-1">
-                <Link
-                  href="/auth"
-                  id="nav-signin-mobile"
-                  onClick={() => setIsOpen(false)}
-                  className="flex-1 btn-brutal-ghost justify-center"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/auth"
-                  id="nav-signup-mobile"
-                  onClick={() => setIsOpen(false)}
-                  className="flex-1 btn-brutal justify-center"
-                >
-                  Sign up
-                </Link>
-              </div>
+              {/* Sign in only */}
+              <Link
+                href="/auth"
+                id="nav-signin-mobile"
+                onClick={() => setIsOpen(false)}
+                className="flex-1 btn-brutal justify-center"
+              >
+                Sign in
+              </Link>
             </div>
           </motion.div>
         )}

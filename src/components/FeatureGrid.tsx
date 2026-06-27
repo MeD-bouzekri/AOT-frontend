@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Reveal from "./Reveal";
 import {
-  ArrowRight,
   Network,
   Database,
   ShieldAlert,
@@ -75,7 +74,7 @@ const features: Feature[] = [
 
 export default function FeatureGrid() {
   return (
-    <section id="features" className="py-24 relative">
+    <section id="features" className="py-24 relative border-t border-brand-border">
       {/* Background visual details */}
       <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
       
@@ -83,13 +82,10 @@ export default function FeatureGrid() {
         
         {/* Section header */}
         <Reveal className="max-w-3xl mx-auto text-center mb-20">
-          <span className="text-xs font-bold uppercase tracking-widest text-brand-cyan font-mono px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
-            Core Capabilities
-          </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-4 font-display">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-text-primary font-display">
             One orchestrator. Every safeguard.
           </h2>
-          <p className="text-gray-400 mt-4 text-base md:text-lg">
+          <p className="text-text-secondary mt-4 text-base md:text-lg">
             From dynamic agent assembly to full audit traceability — the intelligence and the guardrails enterprises need to trust autonomous workflows.
           </p>
         </Reveal>
@@ -127,13 +123,13 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-2xl border border-white/5 bg-slate-900/40 p-6 md:p-8 overflow-hidden transition-all duration-300 hover:border-white/10 hover:shadow-2xl"
+      className="group relative rounded-2xl border border-brand-border bg-brand-card p-6 md:p-8 overflow-hidden transition-all duration-300 hover:shadow-xl dark:hover:shadow-black/30 hover:-translate-y-2 hover:scale-[1.02]"
     >
       {/* Dynamic Glow Radial Gradient Background */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(400px circle at ${coords.x}px ${coords.y}px, rgba(140, 82, 255, 0.06), transparent 80%)`
+          background: `radial-gradient(400px circle at ${coords.x}px ${coords.y}px, rgba(140, 82, 255, 0.12), transparent 80%)`
         }}
       />
 
@@ -141,7 +137,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(120px circle at ${coords.x}px ${coords.y}px, rgba(140, 82, 255, 0.15), transparent 80%)`,
+          background: `radial-gradient(120px circle at ${coords.x}px ${coords.y}px, rgba(140, 82, 255, 0.25), transparent 80%)`,
           padding: "1px",
           WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           WebkitMaskComposite: "xor",
@@ -149,29 +145,20 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
         }}
       />
 
-      {/* Pill header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className={`w-11 h-11 rounded-xl ${feature.colorClass} flex items-center justify-center text-white shadow-md shadow-black/30`}>
+      {/* Icon header */}
+      <div className="flex items-center mb-6">
+        <div className={`w-11 h-11 rounded-xl ${feature.colorClass} flex items-center justify-center text-white shadow-md shadow-black/20 group-hover:scale-110 transition-transform duration-300`}>
           <Icon className="w-5.5 h-5.5" />
         </div>
-        <span className="text-[10px] font-mono font-bold tracking-widest text-brand-cyan uppercase bg-brand-cyan/10 border border-brand-cyan/20 px-2 py-0.5 rounded-full">
-          {feature.pillText}
-        </span>
       </div>
 
       {/* Typography */}
-      <h3 className="text-lg font-bold text-white group-hover:text-brand-cyan transition-colors duration-200">
+      <h3 className="text-lg font-bold text-text-primary group-hover:text-brand-cyan transition-colors duration-200 font-display">
         {feature.title}
       </h3>
-      <p className="text-gray-400 text-xs md:text-sm mt-3 leading-relaxed">
+      <p className="text-text-secondary text-xs md:text-sm mt-3 leading-relaxed">
         {feature.description}
       </p>
-
-      {/* Learn more visual anchor */}
-      <div className="mt-6 flex items-center text-xs font-semibold text-brand-cyan group-hover:text-white transition-colors duration-200 cursor-pointer">
-        <span>Learn more</span>
-        <ArrowRight className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" />
-      </div>
     </motion.div>
   );
 }

@@ -8,6 +8,7 @@ import Hero from "@/components/Hero";
 import Timeline from "@/components/Timeline";
 import FeatureGrid from "@/components/FeatureGrid";
 import LiquidityVisualizer from "@/components/LiquidityVisualizer";
+import Pricing from "@/components/Pricing";
 import CTAForm from "@/components/CTAForm";
 import Footer from "@/components/Footer";
 
@@ -50,6 +51,9 @@ export default function Home() {
 
           {/* Treasury Liquidity Live visualizer */}
           <LiquidityVisualizer />
+
+          {/* Pricing Tier and Estimation Calculator */}
+          <Pricing />
 
           {/* Access Sandbox CTA */}
           <CTAForm />

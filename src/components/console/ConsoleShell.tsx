@@ -31,9 +31,9 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: "Navigation",
     items: [
-      { name: "Home",      href: "/request",        icon: <Send       className={ICON} /> },
+      { name: "Requests", href: "/request",        icon: <Send       className={ICON} /> },
       { name: "Dashboard", href: "/dashboard",       icon: <BarChart3  className={ICON} /> },
-      { name: "Studio",    href: "/dashboard/graph", icon: <Cpu        className={ICON} /> },
+      { name: "Studio",   href: "/dashboard/graph", icon: <Cpu        className={ICON} /> },
       {
         name: "Inbox",
         href: "/dashboard/veto",
@@ -47,6 +47,7 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: "System",
     items: [
+      { name: "Employees",  href: "/dashboard/employees", icon: <Users     className={ICON} /> },
       { name: "Accounts",   href: "/dashboard/accounts",  icon: <Users     className={ICON} />, roles: ["company_admin"] },
       { name: "LLM Config", href: "/dashboard/llm",       icon: <Terminal  className={ICON} />, roles: ["company_admin"] },
       { name: "Settings",   href: "/dashboard/settings",  icon: <Settings  className={ICON} />, roles: ["company_admin"] },

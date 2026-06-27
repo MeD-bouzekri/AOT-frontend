@@ -39,17 +39,14 @@ export default function CTAForm() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* High impact border card */}
-        <Reveal direction="up" className="glass-card rounded-3xl border border-white/10 bg-slate-900/40 p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+        <Reveal direction="up" className="glass-card rounded-3xl border border-brand-border bg-brand-card/45 p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
           
           <div className="max-w-2xl mx-auto relative z-10">
-            <span className="text-xs font-bold uppercase tracking-widest text-brand-cyan font-mono px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">
-              Request Early Access
-            </span>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mt-6 font-display leading-tight">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-text-primary font-display leading-tight">
               Ready to Orchestrate Your Enterprise?
             </h2>
-            <p className="text-gray-300 mt-4 text-sm md:text-base leading-relaxed">
+            <p className="text-text-secondary mt-4 text-sm md:text-base leading-relaxed">
               Join the OrchestrAI early-access program. Assemble specialized agent teams, recall institutional memory, and automate complex workflows — with humans in control and full traceability.
             </p>
 
@@ -66,8 +63,8 @@ export default function CTAForm() {
                     <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 mb-3 shadow-md">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
-                    <h3 className="text-lg font-bold text-white">You&apos;re on the list!</h3>
-                    <p className="text-gray-400 text-xs mt-2 text-center">
+                    <h3 className="text-lg font-bold text-text-primary">You&apos;re on the list!</h3>
+                    <p className="text-text-secondary text-xs mt-2 text-center">
                       Thanks for your interest in OrchestrAI. We&apos;ll reach out with early-access details and a guided walkthrough soon.
                     </p>
                   </motion.div>
@@ -91,7 +88,7 @@ export default function CTAForm() {
                             if (status === "error") setStatus("idle");
                           }}
                           placeholder="enter your work email..."
-                          className="w-full px-5 py-3 rounded-full bg-slate-950 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-brand-cyan/80 transition-colors"
+                          className="w-full px-5 py-3 rounded-full bg-brand-card-light border border-brand-border text-text-primary placeholder-text-faint text-sm focus:outline-none focus:border-brand-cyan/85 transition-colors shadow-inner"
                           required
                           disabled={status === "loading"}
                         />
@@ -120,7 +117,7 @@ export default function CTAForm() {
                         aria-live="polite"
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-xs mt-3 text-left pl-4 font-mono"
+                        className="text-red-500 dark:text-red-400 text-xs mt-3 text-left pl-4 font-mono"
                       >
                         {errorMessage}
                       </motion.p>
@@ -131,7 +128,7 @@ export default function CTAForm() {
             </div>
 
             {/* Compliance/Security tags */}
-            <div className="mt-8 pt-8 border-t border-white/5 flex flex-wrap items-center justify-center gap-6 text-gray-500 text-xs font-mono">
+            <div className="mt-8 pt-8 border-t border-brand-border flex flex-wrap items-center justify-center gap-6 text-text-muted text-xs font-mono">
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-brand-cyan" />
                 <span>Policy-as-Code Governance</span>
