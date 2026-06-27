@@ -97,7 +97,10 @@ export async function passwordLogin(
   try {
     res = await fetch(TOKEN_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "ngrok-skip-browser-warning": "true",
+      },
       body,
     });
   } catch {
@@ -130,7 +133,10 @@ export async function refreshTokens(refreshToken: string): Promise<TokenSet> {
   });
   const res = await fetch(TOKEN_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "ngrok-skip-browser-warning": "true",
+    },
     body,
   });
   if (!res.ok) throw new KeycloakError("Session expired.", res.status);

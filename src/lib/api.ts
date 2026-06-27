@@ -45,6 +45,9 @@ export async function api<T = unknown>(
     headers: {
       ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // ngrok free injects an HTML interstitial on browser requests; this header
+      // skips it so fetch() gets JSON, not the warning page.
+      "ngrok-skip-browser-warning": "true",
       ...headers,
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
