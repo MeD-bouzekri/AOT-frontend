@@ -1,5 +1,6 @@
 "use client";
 
+import { WordmarkLogo } from "./Logo";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -45,13 +46,8 @@ export default function Footer() {
           
           {/* Logo & Intro column */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-xl icon-grad-mix flex items-center justify-center">
-                <span className="text-white font-extrabold text-sm tracking-wider">O</span>
-              </div>
-              <span className="text-lg font-bold tracking-tight text-white font-display">
-                Orchestr<span className="text-brand-cyan">AI</span>
-              </span>
+            <div className="flex items-center">
+              <WordmarkLogo height={32} />
             </div>
             <p className="text-gray-400 text-xs md:text-sm max-w-sm leading-relaxed">
               OrchestrAI is the meta-orchestrator for enterprise workflows. It assembles specialized AI agent teams on the fly, recalls institutional memory, enforces policy-as-code, and keeps humans in the loop — with full traceability.

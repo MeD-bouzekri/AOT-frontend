@@ -133,7 +133,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(400px circle at ${coords.x}px ${coords.y}px, rgba(45, 212, 191, 0.06), transparent 80%)`
+          background: `radial-gradient(400px circle at ${coords.x}px ${coords.y}px, rgba(140, 82, 255, 0.06), transparent 80%)`
         }}
       />
 
@@ -141,7 +141,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(120px circle at ${coords.x}px ${coords.y}px, rgba(45, 212, 191, 0.15), transparent 80%)`,
+          background: `radial-gradient(120px circle at ${coords.x}px ${coords.y}px, rgba(140, 82, 255, 0.15), transparent 80%)`,
           padding: "1px",
           WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           WebkitMaskComposite: "xor",

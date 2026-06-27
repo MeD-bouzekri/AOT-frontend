@@ -48,7 +48,7 @@ export default function AuthShell() {
           layout
           transition={spring}
           style={{ order: formOrder }}
-          className="min-h-0 rounded-3xl border border-brand-border bg-brand-card/55 backdrop-blur-xl"
+          className="min-h-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm"
         >
           <FormPanel mode={mode} onToggle={toggle} />
         </motion.div>

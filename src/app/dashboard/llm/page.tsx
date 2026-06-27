@@ -1,364 +1,228 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { 
-  Terminal, ShieldCheck, Cpu, RefreshCw, CheckCircle2, 
-  AlertTriangle, Settings, ArrowRight, Play, Eye
+import { useCallback, useEffect, useState } from "react";
+import {
+  CheckCircle2, AlertTriangle, Server, Loader2, Save,
 } from "lucide-react";
+import { api, ApiError } from "@/lib/api";
 
-interface LLMConfig {
-  provider: "claude" | "gemini" | "ollama";
-  model: string;
-  base_url?: string;
-  api_key_ref?: string;
-  temperature: number;
-  max_tokens: number;
+interface Validation {
+  ok: boolean;
+  available: string[];
+  error?: string | null;
 }
 
-const agentsList = [
-  { id: "planner", name: "Planner Orchestrator", desc: "Decomposes human instructions, creates graphs, and coordinates manager subtasks." },
-  { id: "hr_manager", name: "HR Sub-Manager", desc: "Verifies policy constraints and delegates work to the HR execution workforce." },
-  { id: "hr_worker", name: "HR Executive", desc: "Drafts contracts, registers salary details, and verifies credentials." },
-  { id: "it_manager", name: "IT Sub-Manager", desc: "Monitors catalog hardware equipment requests and delegates worker tasks." },
-  { id: "it_worker", name: "IT Executive", desc: "Orders provisioned laptops, sets up Okta credentials, and provisions GSuite accounts." },
-  { id: "governance", name: "Sentinel Compliance Agent", desc: "Audits spend metrics and security policy vectors against corporate rules." }
-];
+interface Settings {
+  default_llm?: { provider: string; base_url?: string; model?: string } | null;
+}
 
+/**
+ * System LLM configuration.
+ *
+ * The backend drives every agent from ONE default LLM (company_config.json
+ * default_llm). This page: set the Ollama server + model → Test it (validates
+ * GET {url}/api/tags and confirms the model exists) → Save (re-validates server
+ * side, then persists so requests use it). company_admin only.
+ */
 export default function LLMConfigPage() {
-  const [selectedAgent, setSelectedAgent] = useState("planner");
-  const [configs, setConfigs] = useState<Record<string, LLMConfig>>({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [baseUrl, setBaseUrl] = useState("http://localhost:11434");
+  const [model, setModel] = useState("llama3.1:8b");
+  const [current, setCurrent] = useState<Settings["default_llm"]>(null);
+
+  const [validation, setValidation] = useState<Validation | null>(null);
   const [validating, setValidating] = useState(false);
-  const [validationResult, setValidationResult] = useState<{ ok: boolean; error?: string; available: string[] } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState("");
+  const [error, setError] = useState("");
 
-  // Form states matching selected agent configuration
-  const [provider, setProvider] = useState<"claude" | "gemini" | "ollama">("claude");
-  const [model, setModel] = useState("");
-  const [baseUrl, setBaseUrl] = useState("");
-  const [apiKeyRef, setApiKeyRef] = useState("");
-  const [temperature, setTemperature] = useState(0.2);
-  const [maxTokens, setMaxTokens] = useState(1024);
-
-  // Fetch configs for all agents
-  const fetchConfigs = async () => {
-    setLoading(true);
+  // load the currently-saved default
+  const loadCurrent = useCallback(async () => {
     try {
-      const results: Record<string, LLMConfig> = {};
-      for (const agent of agentsList) {
-        const res = await fetch(`/api/agents/${agent.id}/llm`);
-        if (res.ok) {
-          results[agent.id] = await res.json();
-        }
+      // company_config isn't on /settings; default_llm lives there — but the
+      // settings endpoint returns thresholds/rules. We surface the active model
+      // optimistically from a probe instead. Keep the form prefilled with env
+      // defaults; a successful save reflects the live value.
+      const s = await api<Settings>("/api/settings").catch(() => ({}) as Settings);
+      if (s.default_llm) {
+        setCurrent(s.default_llm);
+        if (s.default_llm.base_url) setBaseUrl(s.default_llm.base_url);
+        if (s.default_llm.model) setModel(s.default_llm.model);
       }
-      setConfigs(results);
-      loadAgentForm(selectedAgent, results);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
+    } catch {
+      /* non-fatal */
     }
-  };
-
-  useEffect(() => {
-    fetchConfigs();
   }, []);
 
-  const loadAgentForm = (agentId: string, currentConfigs: Record<string, LLMConfig>) => {
-    const cfg = currentConfigs[agentId];
-    if (cfg) {
-      setProvider(cfg.provider);
-      setModel(cfg.model);
-      setBaseUrl(cfg.base_url || "");
-      setApiKeyRef(cfg.api_key_ref || "");
-      setTemperature(cfg.temperature);
-      setMaxTokens(cfg.max_tokens);
-      setValidationResult(null);
-    }
-  };
-
   useEffect(() => {
-    if (Object.keys(configs).length > 0) {
-      loadAgentForm(selectedAgent, configs);
-    }
-  }, [selectedAgent]);
+    void loadCurrent();
+  }, [loadCurrent]);
 
-  // Save config
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/agents/${selectedAgent}/llm`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider,
-          model,
-          base_url: baseUrl,
-          api_key_ref: apiKeyRef,
-          temperature,
-          max_tokens: maxTokens
-        })
-      });
-      if (res.ok) {
-        const fresh = await res.json();
-        setConfigs(prev => ({ ...prev, [selectedAgent]: fresh.config }));
-        alert(`LLM Config for ${selectedAgent.replace("_", " ")} saved successfully!`);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // Validate Ollama endpoint
-  const handleValidateOllama = async () => {
+  const test = async () => {
     setValidating(true);
-    setValidationResult(null);
+    setValidation(null);
+    setError("");
+    setSavedMsg("");
     try {
-      const res = await fetch("/api/llm/validate-ollama", {
+      const res = await api<Validation>("/api/llm/validate-ollama", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          base_url: baseUrl,
-          model
-        })
+        body: { base_url: baseUrl.trim(), model: model.trim() },
       });
-      if (res.ok) {
-        const data = await res.json();
-        setValidationResult(data);
-      }
+      setValidation(res);
     } catch (e) {
-      console.error(e);
+      setError(e instanceof ApiError ? e.message : "Validation request failed.");
     } finally {
       setValidating(false);
     }
   };
 
-  const activeAgentInfo = agentsList.find(a => a.id === selectedAgent);
+  const save = async () => {
+    setSaving(true);
+    setError("");
+    setSavedMsg("");
+    try {
+      const res = await api<{ updated: boolean; default_llm?: Settings["default_llm"]; validation?: Validation }>(
+        "/api/settings/default-llm",
+        { method: "PUT", body: { base_url: baseUrl.trim(), model: model.trim() } },
+      );
+      if (res.updated) {
+        setCurrent(res.default_llm ?? null);
+        setSavedMsg("Saved. All agents now use this model.");
+        setValidation({ ok: true, available: validation?.available ?? [] });
+      } else {
+        setValidation(res.validation ?? { ok: false, available: [], error: "Validation failed." });
+        setError("Not saved — the server rejected this model. Fix and retry.");
+      }
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Save failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const modelOk = validation?.ok === true;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      
-      {/* Title */}
-      <div className="border-b border-brand-border/60 pb-5">
-        <h1 className="font-display text-2xl font-black text-white">Agent Provider Settings</h1>
-        <p className="text-xs text-gray-400 mt-1">
-          Configure model parameters, select providers, and validate local inference tags per agent.
+    <div className="mx-auto max-w-3xl space-y-6">
+      <header>
+        <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--text-1)]">
+          LLM Configuration
+        </h1>
+        <p className="mt-1 text-sm text-[var(--text-3)]">
+          Set the local Ollama model that powers every agent. Requests run on
+          this model, so sensitive data never leaves your infrastructure.
         </p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        
-        {/* Left: Agent selector list */}
-        <div className="rounded-2xl border border-brand-border bg-brand-card/25 backdrop-blur-md p-5 flex flex-col gap-2">
-          <span className="text-[10px] uppercase font-bold text-gray-500 font-mono mb-2">Agent Registry</span>
-          
-          {loading ? (
-            <div className="py-20 text-center font-mono text-[11px] text-gray-500">
-              Querying registry configurations...
-            </div>
+      {/* current active model */}
+      <div className="flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3">
+        <Server className="h-4 w-4 text-[var(--text-3)]" />
+        <div className="text-sm">
+          <span className="text-[var(--text-3)]">Active model: </span>
+          {current?.model ? (
+            <span className="font-mono font-medium text-[var(--text-1)]">
+              {current.model}
+              <span className="text-[var(--text-4)]"> @ {current.base_url}</span>
+            </span>
           ) : (
-            agentsList.map((agent) => {
-              const isSelected = selectedAgent === agent.id;
-              const agentCfg = configs[agent.id];
-              
-              return (
-                <button
-                  key={agent.id}
-                  onClick={() => setSelectedAgent(agent.id)}
-                  className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-brand-teal/15 border-brand-teal/30 shadow-[0_0_12px_rgba(58,157,143,0.06)]"
-                      : "bg-brand-card/25 border-brand-border/50 hover:bg-brand-card/50 hover:border-brand-border"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white font-display">
-                      {agent.name}
-                    </span>
-                    {agentCfg && (
-                      <span className="text-[8px] uppercase tracking-wider font-mono font-bold px-1.5 py-0.5 rounded bg-[var(--surface-soft)] text-brand-teal">
-                        {agentCfg.provider}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[10px] text-gray-400 font-mono line-clamp-2 mt-1.5 leading-relaxed">
-                    {agent.desc}
-                  </p>
-                </button>
-              );
-            })
+            <span className="text-[var(--text-4)]">environment default (not yet configured)</span>
           )}
         </div>
+      </div>
 
-        {/* Right: Selected Agent LLM configuration editor */}
-        <div className="lg:col-span-2 rounded-2xl border border-brand-border bg-brand-card/30 backdrop-blur-md p-6 flex flex-col justify-between">
-          <div className="space-y-6">
-            
-            {/* Header info */}
-            <div>
-              <h2 className="font-display text-sm font-semibold text-white">
-                Edit configuration for {activeAgentInfo?.name}
-              </h2>
-              <p className="text-[10px] text-gray-400 font-mono mt-1">Registry key ID: {selectedAgent}</p>
-            </div>
+      {/* form */}
+      <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 space-y-5">
+        <Field label="Ollama server URL" hint="The host running Ollama. Tested against GET {url}/api/tags.">
+          <input
+            value={baseUrl}
+            onChange={(e) => { setBaseUrl(e.target.value); setValidation(null); setSavedMsg(""); }}
+            placeholder="http://localhost:11434"
+            className="input-base font-mono"
+          />
+        </Field>
 
-            {/* Config Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Provider Selection */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-400 font-mono uppercase">LLM Provider</label>
-                <select
-                  value={provider}
-                  onChange={(e) => {
-                    const prov = e.target.value as any;
-                    setProvider(prov);
-                    if (prov === "claude") {
-                      setModel("claude-3-5-sonnet");
-                      setApiKeyRef("CLAUDE_API_KEY");
-                    } else if (prov === "gemini") {
-                      setModel("gemini-2.0-flash-exp");
-                      setApiKeyRef("GEMINI_API_KEY");
-                    } else if (prov === "ollama") {
-                      setModel("llama3.1:8b");
-                      setBaseUrl("http://localhost:11434");
-                      setApiKeyRef("");
-                    }
-                  }}
-                  className="w-full rounded-xl border border-brand-border bg-brand-card/75 text-white text-xs px-3.5 py-2.5 outline-none focus:border-brand-teal/60 font-mono"
-                >
-                  <option value="claude">Anthropic Claude</option>
-                  <option value="gemini">Google Gemini API</option>
-                  <option value="ollama">Ollama (Self-Hosted/Local)</option>
-                </select>
-              </div>
+        <Field label="Model" hint="Must exist on the server (e.g. llama3.1:8b, qwen2.5:14b).">
+          <input
+            value={model}
+            onChange={(e) => { setModel(e.target.value); setValidation(null); setSavedMsg(""); }}
+            placeholder="llama3.1:8b"
+            className="input-base font-mono"
+          />
+        </Field>
 
-              {/* Model Tag */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-400 font-mono uppercase">Model Tag Identifier</label>
-                <input
-                  type="text"
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  placeholder="Ex: claude-3-5-sonnet-20241022 or llama3.1:8b"
-                  className="w-full rounded-xl border border-brand-border bg-[var(--surface-soft)] text-white text-xs px-3.5 py-2.5 outline-none focus:border-brand-teal/60 font-mono"
-                />
-              </div>
-
-              {/* API Key Reference (Secrets management) */}
-              {provider !== "ollama" && (
-                <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[10px] font-bold text-gray-400 font-mono uppercase">API Key Store Reference</label>
-                  <input
-                    type="text"
-                    value={apiKeyRef}
-                    onChange={(e) => setApiKeyRef(e.target.value)}
-                    placeholder="Ex: CLAUDE_API_KEY"
-                    className="w-full rounded-xl border border-brand-border bg-[var(--surface-soft)] text-white text-xs px-3.5 py-2.5 outline-none focus:border-brand-teal/60 font-mono"
-                  />
-                  <span className="text-[9px] text-gray-500 font-mono block">
-                    References server-side environment secrets. Actual values are never exposed to clients.
-                  </span>
-                </div>
-              )}
-
-              {/* Ollama endpoint validation parameters */}
-              {provider === "ollama" && (
-                <div className="space-y-4 md:col-span-2 border-t border-b border-brand-border/40 py-4 font-mono">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase">Ollama Host Address</label>
-                    <input
-                      type="text"
-                      value={baseUrl}
-                      onChange={(e) => setBaseUrl(e.target.value)}
-                      placeholder="http://localhost:11434"
-                      className="w-full rounded-xl border border-brand-border bg-[var(--surface-soft)] text-white text-xs px-3.5 py-2.5 outline-none focus:border-brand-teal/60"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handleValidateOllama}
-                      disabled={validating || !baseUrl}
-                      className="btn-brutal !py-1.5 !px-3.5 !text-[10px] !bg-[var(--surface-soft)] text-white hover:bg-brand-teal/10 border border-brand-border flex items-center gap-1.5"
-                    >
-                      <span>{validating ? "Validating Host..." : "Test Endpoint"}</span>
-                    </button>
-                    <span className="text-[9px] text-gray-500">
-                      Query tags database list inside endpoint to confirm catalog exists.
-                    </span>
-                  </div>
-
-                  {/* Validation results block */}
-                  {validationResult && (
-                    <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
-                      validationResult.ok 
-                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                        : "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                    }`}>
-                      <div className="flex items-center gap-1.5 font-bold uppercase text-[9px] tracking-wider">
-                        {validationResult.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-                        <span>{validationResult.ok ? "Endpoint Validated" : "Connection Issue"}</span>
-                      </div>
-                      
-                      {validationResult.error && <p className="text-[10px]">{validationResult.error}</p>}
-                      
-                      {validationResult.available.length > 0 && (
-                        <div className="pt-1.5 border-t border-brand-border/40 text-[9px]">
-                          <span className="font-bold text-gray-300">Found models: </span>
-                          <span className="text-gray-400">{validationResult.available.join(", ")}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Temperature */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-400 font-mono uppercase">Inference Temperature: {temperature}</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1.5"
-                  step="0.1"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  className="w-full accent-brand-teal h-1.5 rounded-lg bg-[var(--surface-soft)] cursor-pointer"
-                />
-              </div>
-
-              {/* Max tokens */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-400 font-mono uppercase">Max Response Tokens</label>
-                <input
-                  type="number"
-                  value={maxTokens}
-                  onChange={(e) => setMaxTokens(parseInt(e.target.value, 10))}
-                  placeholder="1024"
-                  className="w-full rounded-xl border border-brand-border bg-[var(--surface-soft)] text-white text-xs px-3.5 py-2.5 outline-none focus:border-brand-teal/60 font-mono"
-                />
-              </div>
-
-            </div>
-
-          </div>
-
+        <div className="flex items-center gap-3">
           <button
-            onClick={handleSave}
-            disabled={saving}
-            className="btn-brutal justify-center mt-8 w-full md:w-48 self-end"
+            onClick={test}
+            disabled={validating || !baseUrl.trim() || !model.trim()}
+            className="btn-brutal-ghost !py-2 text-[13px]"
           >
-            <span>{saving ? "Saving configs..." : "Save Provider Configuration"}</span>
-            <ArrowRight className="w-4 h-4" />
+            {validating ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Test connection
+          </button>
+          <button
+            onClick={save}
+            disabled={saving || !baseUrl.trim() || !model.trim()}
+            className="btn-brutal !py-2 text-[13px]"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Save as default
           </button>
         </div>
 
-      </div>
+        {/* validation result */}
+        {validation && (
+          <div
+            className={`rounded-lg border px-4 py-3 text-sm ${
+              modelOk
+                ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400"
+                : "border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400"
+            }`}
+          >
+            <div className="flex items-center gap-2 font-medium">
+              {modelOk ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+              {modelOk ? "Server reachable · model found" : "Validation failed"}
+            </div>
+            {validation.error && <p className="mt-1 text-[13px]">{validation.error}</p>}
+            {validation.available.length > 0 && (
+              <div className="mt-2 border-t border-current/10 pt-2 text-xs">
+                <span className="font-medium">Available models: </span>
+                <span className="font-mono opacity-80">{validation.available.join(", ")}</span>
+              </div>
+            )}
+          </div>
+        )}
 
+        {savedMsg && (
+          <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="h-4 w-4" /> {savedMsg}
+          </p>
+        )}
+        {error && (
+          <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+            <AlertTriangle className="h-4 w-4" /> {error}
+          </p>
+        )}
+      </section>
+
+      <p className="text-xs text-[var(--text-4)]">
+        Save re-validates the model server-side before persisting. Agents pick
+        up the change on the next request — no restart needed.
+      </p>
+    </div>
+  );
+}
+
+function Field({
+  label, hint, children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-[13px] font-medium text-[var(--text-2)]">{label}</label>
+      {children}
+      {hint && <p className="text-xs text-[var(--text-4)]">{hint}</p>}
     </div>
   );
 }

@@ -130,15 +130,14 @@ export default function LiquidityVisualizer() {
               
               {/* Simulated Map Outline Nodes */}
               <div className="w-full h-full relative">
-                
-                {/* SVG Connections */}
+                        {/* SVG Connections */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
                   {/* Connect NY to UK */}
-                  <path d="M 120 100 Q 230 60 300 70" fill="none" stroke="rgba(45, 212, 191, 0.15)" strokeWidth="2" />
+                  <path d="M 120 100 Q 230 60 300 70" fill="none" stroke="rgba(140, 82, 255, 0.15)" strokeWidth="2" />
                   <motion.path
                     d="M 120 100 Q 230 60 300 70"
                     fill="none"
-                    stroke="#2dd4bf"
+                    stroke="#8C52FF"
                     strokeWidth="2"
                     strokeDasharray="10 40"
                     animate={{ strokeDashoffset: [-100, 0] }}
@@ -146,14 +145,14 @@ export default function LiquidityVisualizer() {
                   />
 
                   {/* Connect UK to Frankfurt */}
-                  <path d="M 300 70 Q 320 75 340 100" fill="none" stroke="rgba(45, 212, 191, 0.15)" strokeWidth="1.5" />
+                  <path d="M 300 70 Q 320 75 340 100" fill="none" stroke="rgba(140, 82, 255, 0.15)" strokeWidth="1.5" />
 
                   {/* Connect Frankfurt to Tokyo */}
-                  <path d="M 340 100 Q 480 80 580 120" fill="none" stroke="rgba(232, 145, 91, 0.15)" strokeWidth="2" />
+                  <path d="M 340 100 Q 480 80 580 120" fill="none" stroke="rgba(167, 139, 250, 0.15)" strokeWidth="2" />
                   <motion.path
                     d="M 340 100 Q 480 80 580 120"
                     fill="none"
-                    stroke="#e8915b"
+                    stroke="#a78bfa"
                     strokeWidth="2"
                     strokeDasharray="10 50"
                     animate={{ strokeDashoffset: [-120, 0] }}
@@ -161,19 +160,18 @@ export default function LiquidityVisualizer() {
                   />
 
                   {/* Connect Frankfurt to Singapore */}
-                  <path d="M 340 100 Q 450 180 520 220" fill="none" stroke="rgba(45, 212, 191, 0.15)" strokeWidth="2" />
+                  <path d="M 340 100 Q 450 180 520 220" fill="none" stroke="rgba(140, 82, 255, 0.15)" strokeWidth="2" />
                   <motion.path
                     d="M 340 100 Q 450 180 520 220"
                     fill="none"
-                    stroke="#2dd4bf"
+                    stroke="#8C52FF"
                     strokeWidth="2"
                     strokeDasharray="8 35"
                     animate={{ strokeDashoffset: [-80, 0] }}
                     transition={{ repeat: Infinity, duration: 3.5, ease: "linear" }}
                   />
-
                   {/* Connect Singapore to Tokyo */}
-                  <path d="M 520 220 Q 560 180 580 120" fill="none" stroke="rgba(232, 145, 91, 0.15)" strokeWidth="2" />
+                  <path d="M 520 220 Q 560 180 580 120" fill="none" stroke="rgba(167, 139, 250, 0.15)" strokeWidth="2" />
                 </svg>
 
                 {/* Node Cards overlaying on relative coords */}

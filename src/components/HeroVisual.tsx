@@ -90,8 +90,8 @@ export default function HeroVisual() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    const TEAL: [number, number, number] = [0.227, 0.616, 0.561];
-    const BLUE: [number, number, number] = [0.231, 0.51, 0.965]; // #3b82f6
+    const TEAL: [number, number, number] = [0.549, 0.322, 1.0]; // Violet (#8C52FF logo color)
+    const BLUE: [number, number, number] = [0.655, 0.545, 0.98]; // Light violet/purple
 
     // ── orb shader: fresnel glow, color per node, pulse phase ──
     const orbVert = /* glsl */ `
@@ -139,7 +139,7 @@ export default function HeroVisual() {
       program: brainProg,
     });
     brain.setParent(scene);
-    const brainWireProg = mkOrb([0.3, 0.8, 0.74], 1.5, 0);
+    const brainWireProg = mkOrb([0.655, 0.545, 0.98], 1.5, 0);
     const brainWire = new Mesh(gl, {
       geometry: new Sphere(gl, { radius: 1.25, widthSegments: 22, heightSegments: 16 }),
       program: brainWireProg,
@@ -179,7 +179,7 @@ export default function HeroVisual() {
       fragment: /* glsl */ `
         precision highp float; varying float vGlow; varying float vBlue;
         void main(){
-          vec3 teal=vec3(0.227,0.616,0.561); vec3 blue=vec3(0.231,0.51,0.965);
+          vec3 teal=vec3(0.549,0.322,1.0); vec3 blue=vec3(0.655,0.545,0.98);
           vec3 base = mix(teal, blue, vBlue);
           float a = 0.12 + vGlow*0.9;
           gl_FragColor = vec4(base + vGlow*0.4, a);
@@ -236,7 +236,7 @@ export default function HeroVisual() {
         precision highp float; varying float vF;
         void main(){
           vec2 uv=gl_PointCoord-0.5; if(length(uv)>0.5) discard;
-          vec3 teal=vec3(0.3,0.8,0.74);
+          vec3 teal=vec3(0.549,0.322,1.0);
           float a = smoothstep(0.5,0.0,length(uv)) * (0.2 + vF*0.7);
           gl_FragColor=vec4(teal, a);
         }

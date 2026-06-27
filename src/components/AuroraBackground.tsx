@@ -124,32 +124,32 @@ export default function AuroraBackground() {
         );
         float f = fbm(p + 1.8 * r);
 
-        // palette: near-black base -> muted teal ribbon -> terracotta highlight
-        vec3 base   = vec3(0.027, 0.043, 0.055);   // #070b0e
-        vec3 teal   = vec3(0.227, 0.616, 0.561);    // #3a9d8f muted teal
-        vec3 tealDp = vec3(0.173, 0.478, 0.435);    // #2c7a6f
-        vec3 copper = vec3(0.788, 0.478, 0.306);    // #c97a4e terracotta
+        // palette: near-black base -> violet ribbon -> bright violet highlight
+        vec3 base     = vec3(0.027, 0.043, 0.055);   // #070b0e
+        vec3 violet   = vec3(0.549, 0.322, 1.0);     // #8C52FF violet
+        vec3 violetDp = vec3(0.263, 0.102, 0.620);   // deeper violet (#431a9e)
+        vec3 violetLt = vec3(0.753, 0.604, 1.0);     // lighter violet/lavender
 
         vec3 col = base;
         float ribbon = smoothstep(0.40, 0.80, f);
-        col = mix(col, tealDp, ribbon * 0.85);
-        col = mix(col, teal, smoothstep(0.55, 0.95, f) * 0.8);
-        // sparse terracotta glints where field peaks
+        col = mix(col, violetDp, ribbon * 0.85);
+        col = mix(col, violet, smoothstep(0.55, 0.95, f) * 0.8);
+        // sparse violet glints where field peaks
         float glint = smoothstep(0.75, 0.97, f) * smoothstep(0.5, 0.8, r.x);
-        col = mix(col, copper, glint * 0.85);
+        col = mix(col, violetLt, glint * 0.85);
 
         // radial vignette so edges sink into base
         float vig = smoothstep(1.15, 0.25, distance(uv, vec2(0.5)));
         col *= mix(0.55, 1.0, vig);
 
         // ── LIGHT mode: animated colored ribbons over the light page ──
-        // saturated, lighter-tinted teal/copper so drift is clearly visible
+        // saturated, lighter-tinted violet shades so drift is clearly visible
         // on a near-white background. Color shifts across the flow field +
         // a slow time pulse so the wash reads as moving.
-        vec3 lTeal   = vec3(0.32, 0.74, 0.67);   // brighter teal
-        vec3 lCopper = vec3(0.93, 0.62, 0.42);   // warm copper
+        vec3 lViolet1 = vec3(0.75, 0.62, 1.0);    // soft violet
+        vec3 lViolet2 = vec3(0.60, 0.40, 0.95);    // medium violet
         float mixAmt = smoothstep(0.3, 0.9, r.y);            // field-driven blend
-        vec3 lightCol = mix(lTeal, lCopper, mixAmt);
+        vec3 lightCol = mix(lViolet1, lViolet2, mixAmt);
         // ribbon body + a breathing pulse so motion is obvious
         float pulse = 0.5 + 0.5 * sin(uTime * 0.5 + f * 6.2831);
         float lightEnergy = clamp(ribbon * 1.1 + glint * 1.4, 0.0, 1.0);

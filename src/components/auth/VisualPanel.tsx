@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Zap, Globe } from "lucide-react";
+import { ShieldCheck, Zap, FileClock } from "lucide-react";
+import { LogoMark } from "@/components/Logo";
 
 type Mode = "signin" | "signup";
 
@@ -12,66 +13,68 @@ const copy: Record<Mode, { title: string; sub: string }> = {
   },
   signup: {
     title: "Orchestrate your enterprise.",
-    sub: "Spin up specialized agent teams and automate complex workflows in minutes.",
+    sub: "Specialized agent teams, policy-as-code governance, and full traceability.",
   },
 };
 
 /**
- * The "image" side of the auth split. The global landing aurora shows
- * through this translucent glass panel, so it carries the same animated
- * background. Content cross-fades with the auth mode.
+ * The brand side of the auth split — a deep accent-gradient panel with a
+ * subtle node motif. No blur orbs / aurora; just a clean gradient + grid.
  */
 export default function VisualPanel({ mode }: { mode: Mode }) {
   const c = copy[mode];
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl border border-brand-border">
-      {/* translucent glass so the page aurora glows through */}
-      <div className="absolute inset-0 bg-brand-card/40 backdrop-blur-[2px]" />
+    <div className="relative h-full w-full overflow-hidden rounded-2xl">
+      {/* accent gradient field */}
+      <div className="absolute inset-0 accent-gradient" />
+      {/* faint grid overlay for depth */}
+      <div
+        className="absolute inset-0 opacity-[0.12]"
+        style={{
+          backgroundSize: "44px 44px",
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.6) 1px, transparent 1px)",
+        }}
+      />
+      {/* soft top-light */}
+      <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent" />
 
-      {/* layered teal/copper wash + grid for depth */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.06]" />
-      <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-brand-teal/15 blur-[110px] animate-pulse-subtle pointer-events-none" />
-      <div className="absolute -bottom-24 -right-16 w-[380px] h-[380px] rounded-full bg-brand-copper/12 blur-[100px] animate-pulse-subtle pointer-events-none" />
-
-      {/* content */}
-      <div className="relative z-10 flex h-full flex-col justify-between p-10 lg:p-12">
-        {/* brand mark */}
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-teal to-brand-blue text-brand-bg font-black">
-            O
-          </div>
-          <span className="font-display text-lg font-bold tracking-tight text-white">
-            Orchestr<span className="text-brand-teal">AI</span>
+      <div className="relative z-10 flex h-full flex-col justify-between p-10 lg:p-12 text-white">
+        {/* brand */}
+        <div className="flex items-center gap-2.5">
+          <LogoMark size={26} variant="white" />
+          <span className="font-display text-lg font-semibold tracking-tight">
+            Orchestr<span className="text-white/80">AI</span>
           </span>
         </div>
 
-        {/* headline — cross-fades on mode change */}
+        {/* headline */}
         <motion.div
           key={mode}
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-sm"
         >
-          <h2 className="font-display text-3xl lg:text-4xl font-black leading-tight text-white">
+          <h2 className="font-display text-3xl font-semibold leading-tight lg:text-4xl">
             {c.title}
           </h2>
-          <p className="mt-4 text-sm lg:text-base leading-relaxed text-gray-300">
+          <p className="mt-4 text-sm leading-relaxed text-white/85 lg:text-base">
             {c.sub}
           </p>
         </motion.div>
 
         {/* trust strip */}
-        <div className="flex flex-wrap items-center gap-5 text-[11px] font-mono text-gray-400">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-white/80">
           <span className="inline-flex items-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-brand-teal" /> Policy-as-code
+            <ShieldCheck className="h-4 w-4" /> Policy-as-code
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <Zap className="h-3.5 w-3.5 text-brand-teal" /> Proactive sentinel
+            <Zap className="h-4 w-4" /> Proactive sentinel
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <Globe className="h-3.5 w-3.5 text-brand-teal" /> Full audit trail
+            <FileClock className="h-4 w-4" /> Full audit trail
           </span>
         </div>
       </div>

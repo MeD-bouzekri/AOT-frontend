@@ -5,6 +5,7 @@ import AuroraBackground from "@/components/AuroraBackground";
 import ScrollProgress from "@/components/ScrollProgress";
 import CursorSpotlight from "@/components/CursorSpotlight";
 import PersistentVisual from "@/components/PersistentVisual";
+import { AuthProvider } from "@/lib/auth-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -75,7 +76,7 @@ export default function RootLayout({
 
         {/* All page content renders above the background */}
         <div className="relative z-[2]">
-          {children}
+          <AuthProvider>{children}</AuthProvider>
         </div>
       </body>
     </html>

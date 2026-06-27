@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { KeycloakError } from "@/lib/keycloak";
 
 type Mode = "signin" | "signup";
 
@@ -12,16 +14,14 @@ interface FormPanelProps {
   onToggle: () => void;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export default function FormPanel({ mode, onToggle }: FormPanelProps) {
   const isSignup = mode === "signup";
   const router = useRouter();
+  const { login } = useAuth();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  // signin uses the Keycloak username (e.g. admin1, hr1) or email
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,39 +30,27 @@ export default function FormPanel({ mode, onToggle }: FormPanelProps) {
     e.preventDefault();
     setError("");
 
-    // ── client-side validation ──
-    if (isSignup && name.trim().length < 2) {
-      setError("Enter your full name.");
+    if (!username.trim()) {
+      setError("Enter your username or email.");
       return;
     }
-    if (!EMAIL_RE.test(email)) {
-      setError("Enter a valid email address.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-    if (isSignup && password !== confirm) {
-      setError("Passwords do not match.");
+    if (!password) {
+      setError("Enter your password.");
       return;
     }
 
     setLoading(true);
-    // Simulate API authorization wait
-    await new Promise((r) => setTimeout(r, 800));
-    setLoading(false);
-    
-    // Store user data in localStorage to mock session context
-    localStorage.setItem("userEmail", email);
-    localStorage.setItem("userName", isSignup ? name : email.split("@")[0]);
-    localStorage.setItem("userRole", email === "admin@gmail.com" ? "admin" : "employee");
-    
-    // Reroute
-    if (email === "admin@gmail.com") {
-      router.push("/dashboard");
-    } else {
-      router.push("/request");
+    try {
+      const principal = await login(username.trim(), password);
+      // requesters use the employee portal; every admin role lands on the console
+      router.push(principal.roles.includes("requester") ? "/request" : "/dashboard");
+    } catch (err) {
+      setError(
+        err instanceof KeycloakError
+          ? err.message
+          : "Something went wrong signing in.",
+      );
+      setLoading(false);
     }
   };
 
@@ -78,137 +66,106 @@ export default function FormPanel({ mode, onToggle }: FormPanelProps) {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="font-display text-3xl font-black text-white">
-              {isSignup ? "Create your account" : "Sign in"}
+            <h1 className="font-display text-3xl font-semibold tracking-tight text-white">
+              {isSignup ? "Workspace access" : "Sign in"}
             </h1>
             <p className="mt-2 text-sm text-gray-400">
               {isSignup
-                ? "Start routing payments in minutes."
-                : "Welcome back. Access your dashboard."}
+                ? "OrchestrAI accounts are provisioned by your company administrator."
+                : "Welcome back. Access your console."}
             </p>
           </motion.div>
         </AnimatePresence>
 
-        <form onSubmit={submit} className="mt-8 space-y-4">
-          {/* name — sign-up only */}
-          <AnimatePresence initial={false}>
-            {isSignup && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <Field
-                  icon={<User className="h-4 w-4" />}
-                  type="text"
-                  placeholder="Full name"
-                  value={name}
-                  onChange={setName}
-                  autoComplete="name"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <Field
-            icon={<Mail className="h-4 w-4" />}
-            type="email"
-            placeholder="Work email"
-            value={email}
-            onChange={setEmail}
-            autoComplete="email"
-          />
-
-          <Field
-            icon={<Lock className="h-4 w-4" />}
-            type={showPw ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={setPassword}
-            autoComplete={isSignup ? "new-password" : "current-password"}
-            trailing={
-              <button
-                type="button"
-                onClick={() => setShowPw((s) => !s)}
-                className="text-gray-500 hover:text-brand-teal transition-colors"
-                aria-label={showPw ? "Hide password" : "Show password"}
-              >
-                {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            }
-          />
-
-          {/* confirm — sign-up only */}
-          <AnimatePresence initial={false}>
-            {isSignup && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <Field
-                  icon={<Lock className="h-4 w-4" />}
-                  type={showPw ? "text" : "password"}
-                  placeholder="Confirm password"
-                  value={confirm}
-                  onChange={setConfirm}
-                  autoComplete="new-password"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {!isSignup && (
-            <div className="flex justify-end">
-              <a
-                href="#"
-                className="text-xs font-medium text-gray-400 hover:text-brand-teal transition-colors"
-              >
-                Forgot password?
-              </a>
+        {isSignup ? (
+          /* Accounts aren't self-served: company_admin creates them in the
+             console (Accounts page), so we point new users there instead of
+             a fake registration form. */
+          <div className="mt-8 space-y-5">
+            <div className="rounded-xl border border-brand-border bg-[var(--surface-soft)] p-5 text-sm text-gray-300 leading-relaxed">
+              <p className="font-semibold text-white mb-1.5">Need an account?</p>
+              <p className="text-gray-400">
+                Your company administrator creates accounts and assigns roles
+                (HR, IT, Finance, CISO, CFO, DPO, or requester) from the admin
+                console. Ask them to add you, then sign in with the credentials
+                they share.
+              </p>
             </div>
-          )}
-
-          {error && (
-            <motion.p
-              role="alert"
-              aria-live="polite"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-xs font-mono text-red-400"
+            <button
+              onClick={onToggle}
+              className="btn-brutal w-full justify-center"
             >
-              {error}
-            </motion.p>
-          )}
+              <span>Back to sign in</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="mt-8 space-y-4">
+            <Field
+              icon={<User className="h-4 w-4" />}
+              type="text"
+              placeholder="Username or email"
+              value={username}
+              onChange={setUsername}
+              autoComplete="username"
+            />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-brutal w-full justify-center"
-          >
-            {loading ? (
-              <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand-bg border-t-transparent" />
-            ) : (
-              <>
-                <span>{isSignup ? "Create account" : "Sign in"}</span>
-                <ArrowRight className="h-4 w-4" />
-              </>
+            <Field
+              icon={<Lock className="h-4 w-4" />}
+              type={showPw ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={setPassword}
+              autoComplete="current-password"
+              trailing={
+                <button
+                  type="button"
+                  onClick={() => setShowPw((s) => !s)}
+                  className="text-gray-500 hover:text-brand-teal transition-colors"
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                >
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              }
+            />
+
+            {error && (
+              <motion.p
+                role="alert"
+                aria-live="polite"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs font-mono text-red-400"
+              >
+                {error}
+              </motion.p>
             )}
-          </button>
-        </form>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-brutal w-full justify-center"
+            >
+              {loading ? (
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand-bg border-t-transparent" />
+              ) : (
+                <>
+                  <span>Sign in</span>
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
 
         {/* mode toggle */}
         <p className="mt-7 text-center text-sm text-gray-400">
-          {isSignup ? "Already have an account?" : "New to AeroPay?"}{" "}
+          {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             onClick={onToggle}
             className="font-semibold text-brand-teal hover:text-brand-copper transition-colors"
           >
-            {isSignup ? "Sign in" : "Create one"}
+            {isSignup ? "Sign in" : "How to get access"}
           </button>
         </p>
       </div>

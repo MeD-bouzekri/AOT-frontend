@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, ArrowRight } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import { WordmarkLogo } from "./Logo";
 
 interface NavbarProps {
   showSplash: boolean;
@@ -81,37 +82,14 @@ export default function Navbar({ showSplash }: NavbarProps) {
               }`}
               id="logo-link"
             >
-              {/* Logo Emblem Symbol */}
+              {/* Official wordmark logo (theme-aware) */}
               <motion.div
                 layout
                 transition={{ type: "spring", stiffness: 100, damping: 18 }}
-                whileHover={{ rotate: -6, scale: 1.06 }}
-                className={`flex items-center justify-center icon-grad-mix shadow-lg transition-shadow ${
-                  showSplash
-                    ? "w-16 h-16 rounded-2xl shadow-brand-teal/30"
-                    : "w-9 h-9 rounded-xl group-hover:shadow-[0_0_18px_rgba(58,157,143,0.5)]"
-                }`}
+                className="flex items-center"
               >
-                <motion.span
-                  layout="position"
-                  className={`text-white font-black tracking-wider transition-all duration-500 ${
-                    showSplash ? "text-2xl" : "text-lg"
-                  }`}
-                >
-                  O
-                </motion.span>
+                <WordmarkLogo height={showSplash ? 48 : 30} />
               </motion.div>
-
-              {/* Brand Text */}
-              <motion.span
-                layout
-                transition={{ type: "spring", stiffness: 100, damping: 18 }}
-                className={`font-bold tracking-tight text-white font-display transition-all duration-500 ${
-                  showSplash ? "text-2xl mt-4" : "text-xl"
-                }`}
-              >
-                Orchestr<span className="text-brand-cyan">AI</span>
-              </motion.span>
             </a>
 
             {/* Desktop Navigation — sliding active pill (framer layoutId) */}
@@ -147,7 +125,7 @@ export default function Navbar({ showSplash }: NavbarProps) {
                       <motion.span
                         layoutId="nav-active-dot"
                         transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                        className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-teal shadow-[0_0_8px_rgba(58,157,143,0.9)]"
+                        className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-teal shadow-[0_0_8px_rgba(140,82,255,0.9)]"
                       />
                     )}
                     <span className="relative z-10">{link.name}</span>
