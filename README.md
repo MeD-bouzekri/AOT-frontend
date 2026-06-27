@@ -2,7 +2,7 @@
   <img src="./public/assets/logo-violet.png" alt="Orchestra Logo" width="300" />
 </p>
 
-# Orchestra Console
+#                                    Orchestra Console
 
 Orchestra is a multi-agent orchestration frontend built for high-security enterprise operations. It provides an interactive interface to submit, monitor, and audit compliance-constrained workflows.
 
