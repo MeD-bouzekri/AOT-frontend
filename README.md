@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/assets/logo-violet.png" alt="Orchestra Logo" width="160" />
+  <img src="./public/assets/logo-violet.png" alt="Orchestra Logo" width="300" />
 </p>
 
 # Orchestra Console
